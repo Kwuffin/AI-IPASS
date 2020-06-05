@@ -9,13 +9,14 @@ cardValues = {
     'J': 10, 'Q': 10, 'K': 10
 }
 cardCounter = {}
+hasSplit = False
 
 """There are 8 decks in one game of blackjack, and four of the same value cards in one deck."""
 for card in cards:
     cardCounter[card] = 32
 
-def drawCard():
 
+def drawCard():
     available = True
     while available:
         card = cards[randint(0, 12)]
@@ -35,10 +36,25 @@ def split(deck):
     print("Splitting deck:")
     print("Deck 1:", deck1)
     print("Deck 2:", deck2)
-    print("\n\n")
+    print("\n")
     for deck in allDecks:
-        print("Current hand:", deck1[0])
-        pChoice = input("")
+        print("Your current deck:\n", deck[0])
+        pChoice = input("Would you like to hit or stand?\n> ")
+        pChoice.lower()
+        if pChoice == "hit":
+            while pChoice == "hit":
+                deck.append(drawCard())
+                deck = checkAce(deck)
+                print("Player:")
+                for card in deck:
+                    print(card, end= ' ')
+                print("\nTotal:", getValue(deck))
+                if checkBust(deck):
+                    break
+                if checkBlackjack(deck):
+                    break
+                pChoice = input("Would you like to hit or stand?\n> ")
+    return allDecks
 
 
 def player():
@@ -47,6 +63,7 @@ def player():
     pChoice = "hit"
     while pChoice == "hit":
         pDeck.append(drawCard())
+        pDeck = ["2", "2"]
         pDeck = checkAce(pDeck)
         print("Player:")
         for card in pDeck:
@@ -56,14 +73,23 @@ def player():
             break
         if checkBlackjack(pDeck):
             break
-        print("          =============================================================================================")
+        print("=============================================================================================")
         if pDeck[0] == pDeck[1]:
             pChoice = input("Would you like to hit, stand or split?\n> ")
+            pChoice.lower()
         else:
-            pChoice = input("Would you like to hit or stand?\n> ")
-        pChoice.lower()
+            go = False
+            while not go:
+                pChoice = input("Would you like to hit or stand?\n> ")
+                pChoice.lower()
+                if pChoice != "hit" and pChoice != "stand":
+                    print("\nThat's not an option.\n")
+                else:
+                    go = True
     if pChoice == "split":
-        split(pDeck)
+        global hasSplit
+        hasSplit = True
+        return split(pDeck)
     else:
         return pDeck
 
@@ -166,11 +192,20 @@ def win_decide(dealerWin, playerWin):
 
 def game():
     dDeck = dealerFirst()
-    print("Dealer:\n", dDeck[0], "\n")
+    print("Dealer:")
+    print(dDeck[0], "\n")
     pDeck = player()
     dealerAfter(dDeck)
-    dealerWin, playerWin = deckCompare(pDeck, dDeck)
+
+    if hasSplit:
+        for deck in pDeck:
+            dealerWin, playerWin = deckCompare(deck, dDeck)
+    else:
+        dealerWin, playerWin = deckCompare(pDeck, dDeck)
+
     win_decide(dealerWin, playerWin)
+    print("Ending game...")
+    
 
 
 def help():
