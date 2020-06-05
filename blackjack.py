@@ -39,6 +39,7 @@ def split(deck):
     print("\n")
     for deck in allDecks:
         print("Your current deck:\n", deck[0])
+        print("")
         pChoice = input("Would you like to hit or stand?\n> ")
         pChoice.lower()
         if pChoice == "hit":
@@ -53,8 +54,9 @@ def split(deck):
                     break
                 if checkBlackjack(deck):
                     break
+                print("")
                 pChoice = input("Would you like to hit or stand?\n> ")
-        print("=============================================================================================")
+                print("=============================================================================================")
     return allDecks
 
 
@@ -159,18 +161,18 @@ def deckCompare(pDeck, dDeck):
             playerWin += 1
             print("Blackjack!")
 
-    elif dValue < 21 and pValue < 21:
+    elif getValue(dDeck) < 21 and getValue(pDeck) < 21:
         if dValue > pValue:
             dealerWin += 1
             print("The dealer's value is higher than yours.")
             print("Dealer:", getValue(dDeck))
             print("Player:", getValue(pDeck))
-        elif pValue > dValue:
+        elif getValue(pDeck) > getValue(dDeck):
             playerWin += 1
             print("The player's value is higher than the dealer's!")
             print("Dealer:", getValue(dDeck))
             print("Player:", getValue(pDeck))
-        elif pValue == dValue:
+        elif getValue(pDeck) == getValue(dDeck):
             print("Both hands were the same, it's a push.")
             print("Dealer:", getValue(dDeck))
             print("Player:", getValue(pDeck))
@@ -197,9 +199,9 @@ def game():
     if hasSplit:
         counter = 1
         for deck in pDeck:
+            print("")
             print("Deck", str(counter) + ":")
             dealerWin, playerWin = deckCompare(deck, dDeck)
-            print("")
             counter += 1
 
     else:
