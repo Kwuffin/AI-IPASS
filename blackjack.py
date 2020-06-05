@@ -34,8 +34,8 @@ def split(deck):
     deck1.append(deck[0])
     deck2.append(deck[1])
     print("Splitting deck:")
-    print("Deck 1:", deck1)
-    print("Deck 2:", deck2)
+    print("Deck 1:", deck1[0])
+    print("Deck 2:", deck2[0])
     print("\n")
     for deck in allDecks:
         print("Your current deck:\n", deck[0])
@@ -54,6 +54,7 @@ def split(deck):
                 if checkBlackjack(deck):
                     break
                 pChoice = input("Would you like to hit or stand?\n> ")
+        print("=============================================================================================")
     return allDecks
 
 
@@ -102,7 +103,7 @@ def dealerFirst():
 def dealerAfter(dDeck):
     while getValue(dDeck) < 17:
         print("Dealer:\n"
-              "Value:", getValue(dDeck))
+              "Value:", getValue(dDeck), "\n")
         newCard = drawCard()
         dDeck.append(newCard)
         dDeck = checkAce(dDeck)
@@ -138,42 +139,38 @@ def checkBlackjack(deck):
 
 
 def deckCompare(pDeck, dDeck):
-    dealerWin = False
-    playerWin = False
+    dealerWin = 0
+    playerWin = 0
     pValue = getValue(pDeck)
     dValue = getValue(dDeck)
     if checkBust(pDeck): #  If player busts.
-        dealerWin = True
+        dealerWin += 1
         print("You bust!")
         print("Your value was", getValue(pDeck))
     elif checkBust(dDeck): # Else, if dealer busts
-        playerWin = True
+        playerWin += 1
         print("The dealer bust!")
         print("Their value was", getValue(dDeck))
 
     elif checkBlackjack(pDeck): # If player has blackjack
         if checkBlackjack(dDeck): #  If dealer also has blackjack
-            dealerWin = False
-            playerWin = False
             print("Both had blackjack!")
         else:
-            playerWin = True
+            playerWin += 1
             print("Blackjack!")
 
     elif dValue < 21 and pValue < 21:
         if dValue > pValue:
-            dealerWin = True
+            dealerWin += 1
             print("The dealer's value is higher than yours.")
             print("Dealer:", getValue(dDeck))
             print("Player:", getValue(pDeck))
         elif pValue > dValue:
-            playerWin = True
+            playerWin += 1
             print("The player's value is higher than the dealer's!")
             print("Dealer:", getValue(dDeck))
             print("Player:", getValue(pDeck))
         elif pValue == dValue:
-            playerWin = False
-            dealerWin = False
             print("Both hands were the same, it's a push.")
             print("Dealer:", getValue(dDeck))
             print("Player:", getValue(pDeck))
@@ -184,9 +181,9 @@ def deckCompare(pDeck, dDeck):
 def win_decide(dealerWin, playerWin):
     print("=============================================================================================")
     print("\n")
-    if dealerWin == True:
+    if dealerWin > playerWin:
         print("The dealer has won.")
-    elif playerWin == True:
+    elif playerWin > dealerWin:
         print("Congratulations, you won!")
 
 
@@ -198,8 +195,13 @@ def game():
     dealerAfter(dDeck)
 
     if hasSplit:
+        counter = 1
         for deck in pDeck:
+            print("Deck", str(counter) + ":")
             dealerWin, playerWin = deckCompare(deck, dDeck)
+            print("")
+            counter += 1
+
     else:
         dealerWin, playerWin = deckCompare(pDeck, dDeck)
 
@@ -243,10 +245,12 @@ def helpCards():
 
 def helpCommands():
     print("Commands:\n"
-          " In blackjack, you can 'hit', or 'stand'.\n"
-          " Hitting means that the player will pick another card, and thus"
+          " In blackjack, you can 'hit', 'stand', or 'split'.\n"
+          "  - Hitting means that the player will pick another card, and thus"
           " adding more value to their deck.\n"
-          " Staning means that the player will stop drawing cards and the dealer will unveil their other card.")
+          "  - Staning means that the player will stop drawing cards and the dealer will unveil their other card.\n"
+          "  - Splitting is only possible when your starting hand has two of the same cards. This will split your\n"
+          "    deck into two separate decks, however your bet will be doubled (due to having two decks).")
 
 
 def helpDealerRules():
