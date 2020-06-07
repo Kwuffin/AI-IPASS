@@ -45,7 +45,7 @@ def split(deck):
         print("Your current deck:\n", deck[0])
         print("")
         pChoice = input("Would you like to hit or stand?\n> ")
-        pChoice.lower()
+        pChoice = pChoice.lower()
         if pChoice == "hit":
             while pChoice == "hit":
                 deck.append(drawCard())
@@ -60,6 +60,7 @@ def split(deck):
                     break
                 print("")
                 pChoice = input("Would you like to hit or stand?\n> ")
+                pChoice = pChoice.lower()
                 print("=============================================================================================")
     return allDecks
 
@@ -89,16 +90,16 @@ def player():
             print("=============================================================================================")
             if pDeck[0] == pDeck[1] and turn > 0:
                 pChoice = input("Would you like to hit, stand or split?\n> ")
-                pChoice.lower()
+                pChoice = pChoice.lower()
             elif pDeck[0] == pDeck[1] and turn == 0:
                 pChoice = input("Would you like to hit, stand, split or double down?\n> ")
-                pChoice.lower()
+                pChoice = pChoice.lower()
 
             elif pDeck[0] != pDeck[1] and turn > 0:
                 stand = False
                 while not stand:
                     pChoice = input("Would you like to hit or stand?\n> ")
-                    pChoice.lower()
+                    pChoice = pChoice.lower()
                     if pChoice != "hit" and pChoice != "stand":
                         print("\nThat's not an option.\n")
                     else:
@@ -107,7 +108,7 @@ def player():
                 stand = False
                 while not stand:
                     pChoice = input("Would you like to hit, stand or double down?\n> ")
-                    pChoice.lower()
+                    pChoice = pChoice.lower()
                     if pChoice != "hit" and pChoice != "stand":
                         print("\nThat's not an option.\n")
                     else:
@@ -348,7 +349,7 @@ def main():
     if menuOption == '1':
         print("==================================║ Welcome to blackjack! ║==================================")
         betting = input("Would you like to bet any money? (Yes/No)\n> ")
-        betting.lower()
+        betting = betting.lower()
         if betting == "yes":
             global betAmount
             betAmount = bet()
