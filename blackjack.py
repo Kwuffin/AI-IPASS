@@ -2,6 +2,7 @@
 
 from random import randint
 
+
 cards = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
 cardValues = {
     'A': 11, 'a': 1,
@@ -10,6 +11,8 @@ cardValues = {
 }
 cardCounter = {}
 hasSplit = False
+hasBet = False
+betAmount = 0
 
 """There are 8 decks in one game of blackjack, and four of the same value cards in one deck."""
 for card in cards:
@@ -91,7 +94,9 @@ def player():
                     go = True
     if pChoice == "split":
         global hasSplit
+        global betAmount
         hasSplit = True
+        betAmount *= 2
         return split(pDeck)
     else:
         return pDeck
@@ -160,6 +165,9 @@ def deckCompare(pDeck, dDeck):
         else:
             playerWin += 1
             print("Blackjack!")
+    elif checkBlackjack(dDeck):
+        dealerWin += 1
+        print("The dealer had blackjack.")
 
     elif getValue(dDeck) < 21 and getValue(pDeck) < 21:
         if dValue > pValue:
@@ -183,10 +191,18 @@ def deckCompare(pDeck, dDeck):
 def win_decide(dealerWin, playerWin):
     print("=============================================================================================")
     print("\n")
-    if dealerWin > playerWin:
-        print("The dealer has won.")
-    elif playerWin > dealerWin:
-        print("Congratulations, you won!")
+    if betAmount > 0:
+        if dealerWin > playerWin:
+            print("The dealer has won.")
+            print("You lost", betAmount)
+        elif playerWin > dealerWin:
+            print("Congratulations, you won!")
+            print("You earned", betAmount)
+    else:
+        if dealerWin > playerWin:
+            print("The dealer has won.")
+        elif playerWin > dealerWin:
+            print("Congratulations, you won!")
 
 
 def game():
@@ -209,7 +225,24 @@ def game():
 
     win_decide(dealerWin, playerWin)
     print("Ending game...")
-    
+
+
+def bet():
+    while True:
+        try:
+            bet = input("Press enter to go back.\nHow much do you want to bet?\n> ")
+            if bet == '':
+                main()
+                break
+            else:
+                global betAmount
+                betAmount = int(bet)
+                global hasBet
+                hasBet = True
+                game()
+            break
+        except ValueError:
+            print("Please give a number.")
 
 
 def help():
@@ -271,7 +304,13 @@ def main():
                        )
     if menuOption == '1':
         print("==================================║ Welcome to blackjack! ║==================================")
-        game()
+        betting = input("Would you like to bet any money? (Yes/No)\n> ")
+        betting.lower()
+        if betting == "yes":
+            global betAmount
+            betAmount = bet()
+        else:
+            game()
     elif menuOption == '2':
         help()
     elif menuOption == '3':
