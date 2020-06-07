@@ -13,6 +13,7 @@ cardCounter = {}
 hasSplit = False
 hasBet = False
 betAmount = 0
+turn = -1
 
 """There are 8 decks in one game of blackjack, and four of the same value cards in one deck."""
 for card in cards:
@@ -64,35 +65,67 @@ def split(deck):
 
 
 def player():
+    global turn
     pDeck = []
     pDeck.append(drawCard())
     pChoice = "hit"
     while pChoice == "hit":
+
+        if pChoice == "hit":
+            turn += 1
+            pDeck.append(drawCard())
+            pDeck = ["2", "2"]
+            pDeck = checkAce(pDeck)
+            print("Player:")
+            for card in pDeck:
+                print(card, end=' ')
+            print("\nTotal:", getValue(pDeck))
+
+            if checkBust(pDeck):
+                break
+            if checkBlackjack(pDeck):
+                break
+
+            print("=============================================================================================")
+            if pDeck[0] == pDeck[1] and turn > 0:
+                pChoice = input("Would you like to hit, stand or split?\n> ")
+                pChoice.lower()
+            elif pDeck[0] == pDeck[1] and turn == 0:
+                pChoice = input("Would you like to hit, stand, split or double down?\n> ")
+                pChoice.lower()
+
+            elif pDeck[0] != pDeck[1] and turn > 0:
+                stand = False
+                while not stand:
+                    pChoice = input("Would you like to hit or stand?\n> ")
+                    pChoice.lower()
+                    if pChoice != "hit" and pChoice != "stand":
+                        print("\nThat's not an option.\n")
+                    else:
+                        stand = True
+            elif pDeck[0] != pDeck[1] and turn == 0:
+                stand = False
+                while not stand:
+                    pChoice = input("Would you like to hit, stand or double down?\n> ")
+                    pChoice.lower()
+                    if pChoice != "hit" and pChoice != "stand":
+                        print("\nThat's not an option.\n")
+                    else:
+                        stand = True
+
+    if pChoice == "double down":
+        doubleDown()
+        turn += 1
         pDeck.append(drawCard())
-        pDeck = ["2", "2"]
         pDeck = checkAce(pDeck)
         print("Player:")
         for card in pDeck:
-            print(card, end= ' ')
+            print(card, end=' ')
         print("\nTotal:", getValue(pDeck))
-        if checkBust(pDeck):
-            break
-        if checkBlackjack(pDeck):
-            break
         print("=============================================================================================")
-        if pDeck[0] == pDeck[1]:
-            pChoice = input("Would you like to hit, stand or split?\n> ")
-            pChoice.lower()
-        else:
-            go = False
-            while not go:
-                pChoice = input("Would you like to hit or stand?\n> ")
-                pChoice.lower()
-                if pChoice != "hit" and pChoice != "stand":
-                    print("\nThat's not an option.\n")
-                else:
-                    go = True
-    if pChoice == "split":
+        return pDeck
+
+    elif pChoice == "split":
         global hasSplit
         global betAmount
         hasSplit = True
@@ -244,6 +277,16 @@ def bet():
         except ValueError:
             print("Please give a number.")
 
+
+def doubleDown():
+    if hasBet and turn == 0:
+        global betAmount
+        betAmount *= 2
+    else:
+        if turn != 0:
+            print("You can only double down on your first turn.")
+        elif not hasBet:
+            print("You did not bet this game.")
 
 def help():
     print("\n\n\n\n\n\n\n\nHello!")
