@@ -34,6 +34,10 @@ def drawCard():
 def split(deck):
     deck1 = []
     deck2 = []
+    if deck[0] == 'a' and deck[1] == 'A':
+        deck[0] = "A"
+    elif deck[0] == 'A' and deck[1] == 'a':
+        deck[1] = "A"
     allDecks = [deck1, deck2]
     deck1.append(deck[0])
     deck2.append(deck[1])
@@ -66,6 +70,7 @@ def split(deck):
 
 
 def player():
+    #  Draws the first two cards for the player
     global turn
     pDeck = []
     pDeck.append(drawCard())
@@ -75,41 +80,52 @@ def player():
         if pChoice == "hit":
             turn += 1
             pDeck.append(drawCard())
-            pDeck = ["2", "2"]
             pDeck = checkAce(pDeck)
             print("Player:")
             for card in pDeck:
                 print(card, end=' ')
             print("\nTotal:", getValue(pDeck))
 
+            #  Check if the player has bust.
             if checkBust(pDeck):
                 break
+            #  Check if the player got a blackjack.
             if checkBlackjack(pDeck):
                 break
 
             print("=============================================================================================")
-            if pDeck[0] == pDeck[1] and turn > 0:
-                pChoice = input("Would you like to hit, stand or split?\n> ")
-                pChoice = pChoice.lower()
-            elif pDeck[0] == pDeck[1] and turn == 0:
+            #  If the first and second card are the same in the player's first turn.
+            if pDeck[0] == pDeck[1] and turn == 0:
                 pChoice = input("Would you like to hit, stand, split or double down?\n> ")
                 pChoice = pChoice.lower()
 
+            elif pDeck[0] == 'a' and pDeck[1] == 'A' and turn == 0:
+                pChoice = input("Would you like to hit, stand, split or double down?\n> ")
+                pChoice = pChoice.lower()
+            elif pDeck[1] == 'a' and pDeck[0] == 'A' and turn == 0:
+                pChoice = input("Would you like to hit, stand, split or double down?\n> ")
+                pChoice = pChoice.lower()
+
+            #  Else if the first and second cards are NOT the same, nor is it the player's first turn.
             elif pDeck[0] != pDeck[1] and turn > 0:
                 stand = False
                 while not stand:
                     pChoice = input("Would you like to hit or stand?\n> ")
                     pChoice = pChoice.lower()
-                    if pChoice != "hit" and pChoice != "stand":
+                    turn += 1
+                    if pChoice != "hit" and pChoice != "stand" and pChoice != "double down":
                         print("\nThat's not an option.\n")
                     else:
                         stand = True
+
+            #  Else if the first two cards are the same in the player's first turn.
             elif pDeck[0] != pDeck[1] and turn == 0:
                 stand = False
                 while not stand:
                     pChoice = input("Would you like to hit, stand or double down?\n> ")
                     pChoice = pChoice.lower()
-                    if pChoice != "hit" and pChoice != "stand":
+                    turn += 1
+                    if pChoice != "hit" and pChoice != "stand" and pChoice != "double down":
                         print("\nThat's not an option.\n")
                     else:
                         stand = True
@@ -137,11 +153,13 @@ def player():
 
 
 def dealerFirst():
+    #  Draws first two cards for the dealer
     dDeck = [drawCard(), drawCard()]
     return dDeck
 
 
 def dealerAfter(dDeck):
+    #  If the dealer has a value, lower than 17, draw a card until the value is above 17
     while getValue(dDeck) < 17:
         print("Dealer:\n"
               "Value:", getValue(dDeck), "\n")
@@ -161,8 +179,8 @@ def getValue(deck):
 
 
 def checkAce(deck):
-    value = getValue(deck)
     for card in deck:
+        value = getValue(deck)
         if cardValues[card] == 11 and value > 21:
             acePos = deck.index("A")
             deck[acePos] = "a"
@@ -324,12 +342,13 @@ def helpCards():
 
 def helpCommands():
     print("Commands:\n"
-          " In blackjack, you can 'hit', 'stand', or 'split'.\n"
+          " In blackjack, you can 'hit', 'stand', 'split', or 'double down'.\n"
           "  - Hitting means that the player will pick another card, and thus"
           " adding more value to their deck.\n"
           "  - Staning means that the player will stop drawing cards and the dealer will unveil their other card.\n"
           "  - Splitting is only possible when your starting hand has two of the same cards. This will split your\n"
-          "    deck into two separate decks, however your bet will be doubled (due to having two decks).")
+          "    deck into two separate decks, however your bet will be doubled (due to having two decks).\n"
+          "  - Doubling down will draw one card, and double your bet.")
 
 
 def helpDealerRules():
@@ -343,7 +362,6 @@ def main():
     menuOption = input("Select an option:\n"
                        "  1. Start\n"
                        "  2. Help/Rules\n"
-                       "  3. Quit\n"
                        "  > "
                        )
     if menuOption == '1':
@@ -357,12 +375,6 @@ def main():
             game()
     elif menuOption == '2':
         help()
-    elif menuOption == '3':
-        exit()
-    else:
-        print("That's not even an option, but I'll just quit then...\n")
-        exit()
 
 
-if __name__ == "__main__":
-    main()
+main()
