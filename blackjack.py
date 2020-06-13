@@ -2,7 +2,6 @@
 
 from random import randint
 
-
 cards = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
 cardValues = {
     'A': 11, 'a': 1,
@@ -56,7 +55,7 @@ def split(deck):
                 deck = checkAce(deck)
                 print("Player:")
                 for card in deck:
-                    print(card, end= ' ')
+                    print(card, end=' ')
                 print("\nTotal:", getValue(deck))
                 if checkBust(deck):
                     break
@@ -202,17 +201,17 @@ def deckCompare(pDeck, dDeck):
     playerWin = 0
     pValue = getValue(pDeck)
     dValue = getValue(dDeck)
-    if checkBust(pDeck): #  If player busts.
+    if checkBust(pDeck):  # If player busts.
         dealerWin += 1
         print("You bust!")
         print("Your value was", getValue(pDeck))
-    elif checkBust(dDeck): # Else, if dealer busts
+    elif checkBust(dDeck):  # Else, if dealer busts
         playerWin += 1
         print("The dealer bust!")
         print("Their value was", getValue(dDeck))
 
-    elif checkBlackjack(pDeck): # If player has blackjack
-        if checkBlackjack(dDeck): #  If dealer also has blackjack
+    elif checkBlackjack(pDeck):  # If player has blackjack
+        if checkBlackjack(dDeck):  # If dealer also has blackjack
             print("Both had blackjack!")
         else:
             playerWin += 1
@@ -307,6 +306,7 @@ def doubleDown():
         elif not hasBet:
             print("You did not bet this game.")
 
+
 def help():
     print("\n\n\n\n\n\n\n\nHello!")
     print("You are playing blackjack, the goal is to have the total value of your cards higher than the dealer's cards")
@@ -334,10 +334,10 @@ def helpCards():
     for card, value in cardValues.items():
         print("{:2}  -  {:2}".format(card, value))
     print("\nNote: An Ace can have either a value of 1, or 11. Its value is 11 if the total value of the deck\n"
-            "is 21 or lower, also called; a 'soft' deck.\n"
-            "If the total value of a deck is over 21, the Ace will have a value of 1.\n"
-            "A soft deck with an ace (11) will be visualized as a capital 'A', and a hard deck with an ace will\n"
-            "be visualized as an uncapitalized 'a'.")
+          "is 21 or lower, also called; a 'soft' deck.\n"
+          "If the total value of a deck is over 21, the Ace will have a value of 1.\n"
+          "A soft deck with an ace (11) will be visualized as a capital 'A', and a hard deck with an ace will\n"
+          "be visualized as an uncapitalized 'a'.")
 
 
 def helpCommands():
@@ -377,4 +377,5 @@ def main():
         help()
 
 
-main()
+if __name__ == '__main__':
+    main()
