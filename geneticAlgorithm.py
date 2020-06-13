@@ -1,6 +1,7 @@
 import blackjackSim as bjs
 from random import randint
 import numpy as np
+import time
 
 cardValues = {
     'A': 11, 'a': 1,
@@ -305,4 +306,8 @@ def main():
 
 
 if __name__ == '__main__':
+    start_time = time.time()
     main()
+    end_time = time.time()
+    print("Code ran in", (end_time - start_time) // 60, "minutes,",
+          (end_time - start_time) % 60, "seconds")
