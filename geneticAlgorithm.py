@@ -54,7 +54,8 @@ def mutate(individual, chance):  # TODO: Finish this
     can be a negative value."""
 
 
-def calcFitness(statusDict, betDict):  # TODO: Finish this
+def calcFitness(statusDict, betDict):
+    fitnessTemp = {}
     fitnessDict = {}
     counter = 0
 
@@ -97,8 +98,14 @@ def calcFitness(statusDict, betDict):  # TODO: Finish this
                         fitness += betDict[counter][counter2]
                         temp.append(fitness)
 
-        fitnessDict[counter] = temp.copy()
+        fitnessTemp[counter] = temp.copy()
 
+    indCounter = 1
+    for results in fitnessTemp.values():
+        fitnessDict[indCounter] = sum(results) / len(results)
+        indCounter += 1
+
+    print("fitness Temp:", fitnessTemp)
     print("FitnessDict:", fitnessDict)
     return fitnessDict
 
