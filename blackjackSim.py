@@ -38,6 +38,7 @@ def dealerInitial():
     return dDeck
 
 
+#  Return value of deck.
 def value(deck):
     value = 0
     for card in deck:
@@ -103,11 +104,3 @@ def compare(pDeck, dDeck):
         elif pValue == dValue:
             return dealerWin, playerWin
     return dealerWin, playerWin
-
-
-def main():
-    bot()
-    dealerInitial()
-
-
-main()

@@ -29,7 +29,7 @@ def createIndividual():
 
 
 #  Create a population of N amount of individuals.
-def createPopulation(amount):
+def createPopulation(amount):  # TODO: Add comments
     population = []
     for x in range(0, amount):
         population.append(createIndividual())
@@ -37,25 +37,70 @@ def createPopulation(amount):
 
 
 #  For each individual, there is a chance for each gene to mutate to the same or a different gene.
-def mutate(individual, chance):
+def mutate(individual, chance):  # TODO: Finish this
     for table in individual:
-        for gen in table:
+        for gene in table:
             randint(0, 100)
             if randint < chance:
                 if len(table) == 100:
-                    gen = randint(0, 3)
+                    gene = randint(0, 3)
                 else:
-                    gen = randint(0, 2)
+                    gene = randint(0, 2)
     return individual
 
 
-#  Calculate the fitness for each individual.
-def calcFitness(individual):
-    """The fitness is calculated by making each individual play the game X amount of times.
-       The amount of money won/lost will be its fitness value, that means that the fitness
-       can be a negative value."""
+"""The fitness is calculated by making each individual play the game X amount of times.
+    The amount of money won/lost will be its fitness value, that means that the fitness
+    can be a negative value."""
 
-    return individual
+
+def calcFitness(statusDict, betDict):  # TODO: Finish this
+    fitnessDict = {}
+    counter = 0
+
+    for results in statusDict.values():
+        counter += 1
+        temp = []
+
+        counter2 = -1
+        #  For every win/loss/push for all simulations of an individual.
+        for result in results:
+            counter2 += 1
+            fitness = 0
+
+            #  If the deck wasn't split in simulation
+            if type(result) == int:
+
+                #  If player lost
+                if result == -1:
+                    fitness -= betDict[counter][counter2]
+                    temp.append(fitness)
+
+                #  If player won
+                elif result == 1:
+                    fitness += betDict[counter][counter2]
+                    temp.append(fitness)
+
+            #  If the deck was split in simulation
+            if type(result) == list:
+
+                #  For each deck in the simulation.
+                for splitResult in result:
+
+                    #  If player lost
+                    if splitResult == -1:
+                        fitness -= betDict[counter][counter2]
+                        temp.append(fitness)
+
+                    #  If player won
+                    elif splitResult == 1:
+                        fitness += betDict[counter][counter2]
+                        temp.append(fitness)
+
+        fitnessDict[counter] = temp.copy()
+
+    print("FitnessDict:", fitnessDict)
+    return fitnessDict
 
 
 def cross(individual1, individual2):  # TODO: Finish this
@@ -69,7 +114,7 @@ def makeDecision(individual, pDeck, dDeck):
     rowCount = -1
 
     #  If the player gets a deck with two of the same cards.
-    if (pDeck[0] == pDeck[1]) or (pDeck[0] == 'a' and pDeck[1] == 'A') or (pDeck[0] == 'A' and pDeck[1] == 'a'):
+    if len(pDeck) == 2 and (pDeck[0] == pDeck[1] or ((pDeck[0] == 'a' and pDeck[1] == 'A') or (pDeck[0] == 'A' and pDeck[1] == 'a'))):
         for pValueGuess in range(22, 3, -2):
             rowCount += 1
             columnCount = -1
@@ -80,7 +125,7 @@ def makeDecision(individual, pDeck, dDeck):
                     return individual[2].item(rowCount, columnCount)
 
     #  If the player gets a soft deck
-    elif (pDeck[0] != pDeck[1]) and (pDeck[0] == 'A' or pDeck[0] == 'a' or pDeck[1] == 'A' or pDeck[1] == 'a'):
+    elif 'A' in pDeck:
         for pValueGuess in range(20, 12, -1):
             rowCount += 1
             columnCount = -1
@@ -91,7 +136,7 @@ def makeDecision(individual, pDeck, dDeck):
                     return individual[1].item(rowCount, columnCount)
 
     #  If the player gets a hard deck
-    elif pDeck[0] != pDeck[1] and pDeck[0] != 'A' and pDeck[0] != 'a' and pDeck != 'A' and pDeck != 'a':
+    elif pDeck[0] != pDeck[1] or len(pDeck) > 2:
         for pValueGuess in range(20, 4, -1):
             rowCount += 1
             columnCount = -1
@@ -122,7 +167,7 @@ def simulate(individual, betAmount):
         #  Check if bust
         if bjs.bust(bDeck):  # If player busts
             status = -1
-            return status
+            return status, betAmount
         #  Check for 21
         if bjs.checkBlackjack(dDeck):
             break
@@ -140,16 +185,17 @@ def simulate(individual, betAmount):
         #  If the dealer also has a blackjack.
         if bjs.checkBlackjack(dDeck):
             status = 0
-            return status
+            return status, betAmount
         #  If the dealer doesn't have blackjack.
         else:
             status = 1
-            return status
+            betAmount *= 3
+            return status, betAmount
 
     #  If the dealer has a blackjack
     elif bjs.checkBlackjack(dDeck):
         status = -1
-        return status
+        return status, betAmount
 
     #  If stand
     if botChoice == 0:
@@ -157,13 +203,13 @@ def simulate(individual, betAmount):
         dw, pw = bjs.compare(bDeck, dDeck)
         if dw == 1 and pw == 0:
             status = -1
-            return status
+            return status, betAmount
         elif dw == 0 and pw == 1:
             status = 1
-            return status
+            return status, betAmount
         elif dw == 0 and pw == 0:
             status = 0
-            return status
+            return status, betAmount
 
     #  If double down
     elif botChoice == 2:
@@ -176,19 +222,19 @@ def simulate(individual, betAmount):
         #  Check if bust.
         if bjs.bust(bDeck):
             status = -1
-            return status
+            return status, betAmount
 
         #  Compare to dealer
         dw, pw = bjs.compare(bDeck, dDeck)
         if dw == 1 and pw == 0:
             status = -1
-            return status
+            return status, betAmount
         elif dw == 0 and pw == 1:
             status = 1
-            return status
+            return status, betAmount
         elif dw == 0 and pw == 0:
             status = 0
-            return status
+            return status, betAmount
 
     #  If split
     elif botChoice == 3:
@@ -203,6 +249,9 @@ def simulate(individual, betAmount):
 
         #  Play with both hands
         deckNumber = -1
+
+        #  Double the bet
+        betAmount *= 2
 
         for deck in bDecks:
             deckNumber += 1
@@ -271,43 +320,60 @@ def simulate(individual, betAmount):
                     deckStatus[deckNumber] = 1
                 elif dw == 0 and pw == 0:
                     deckStatus[deckNumber] = 0
-        return deckStatus
-
-
-def checkWinner(status):
-    if type(status) == int:
-        print("int")
-        print(status)
-    elif type(status) == list:
-        print("List")
-        print(status)
+        return deckStatus, betAmount
 
 
 def main():
     populationAmount = input("Amount of individuals in population: ")
     populationAmount = int(populationAmount)
-    population = createPopulation(populationAmount)
 
     simAmount = input("Amount of simulated games per individual: ")
     simAmount = int(simAmount)
 
-    betAmount = input("Bet: ")
-    betAmount = int(betAmount)
+    mut_chance = input("Chance for each gene to mutate: ")
+    mut_chance = int(mut_chance)
 
+    betAmountInput = input("Bet: ")
+    betAmountInput = int(betAmountInput)
+
+    global start_time
+    start_time = time.time()
+
+    population = createPopulation(populationAmount)
+
+    #  Simulate x amount of games for every individual in a population and
+    #  put all results (win, loss, push) in a dictionary.
+    statusDict = {}
     indCount = 0
+    betDict = {}
     for individual in population:
         indCount += 1
+        statusList = []
+        betList = []
         for x in range(0, simAmount):
             print("==========================================")
             print("Simulation", x + 1)
             print("Individual", indCount)
-            status = simulate(individual, betAmount)
-            checkWinner(status)
+            status, betAmount = simulate(individual, betAmountInput)
+            statusList.append(status)
+            betList.append(betAmount)
+
+        statusDict[indCount] = statusList.copy()
+        betDict[indCount] = betList.copy()
+
+    print("StatusDict:", statusDict)
+    print("BetDict:", betDict)
+
+    #  Calculate the fitness for each individual
+    calcFitness(statusDict, betDict)
 
 
+start_time = 0
 if __name__ == '__main__':
-    start_time = time.time()
+
     main()
+
     end_time = time.time()
-    print("Code ran in", (end_time - start_time) // 60, "minutes,",
+    print("==========================================\nExecution time:\n",
+          (end_time - start_time) // 60, "minutes,",
           (end_time - start_time) % 60, "seconds")
