@@ -12,46 +12,116 @@ cardValues = {
 
 #  Create an individual of our population, where the genes are the
 #  decisions whether the AI wants to stand, hit, split or double down.
-def createIndividual():
-    #  0 = stand ; 1 = hit ; 2 = double down ; 3 = split
-    genes = [
+def createIndividual(random, parents):
+    if random:
+        #  0 = stand ; 1 = hit ; 2 = double down ; 3 = split
+        genes = [
+            #  Hard decks
+            np.random.randint(0, 3, (16, 10)),
+
+            #  Soft decks
+            np.random.randint(0, 3, (8, 10)),
+
+            #  Splitting decks
+            np.random.randint(0, 4, (10, 10))
+        ]
+        return genes
+
+    else:
         #  Hard decks
-        np.random.randint(0, 3, (16, 10)),
+        hard = []
+        for x in range(0, 16):
+            parentChoice = randint(0, 100)
+            if parentChoice < 50:
+                hard.append(parents[0][0][x])
+            elif parentChoice >= 50:
+                hard.append(parents[1][0][x])
 
         #  Soft decks
-        np.random.randint(0, 3, (8, 10)),
+        soft = []
+        for x in range(0, 8):
+            parentChoice = randint(0, 100)
+            if parentChoice < 50:
+                soft.append(parents[0][1][x])
+            elif parentChoice >= 50:
+                soft.append(parents[1][1][x])
 
         #  Splitting decks
-        np.random.randint(0, 4, (10, 10))
-    ]
+        split = []
+        for x in range(0, 10):
+            parentChoice = randint(0, 100)
+            if parentChoice < 50:
+                split.append(parents[0][2][x])
+            elif parentChoice >= 50:
+                split.append(parents[1][2][x])
 
-    return genes
+        genes = [np.array(hard).copy(), np.array(soft).copy(), np.array(split).copy()]
+
+        return genes
 
 
 #  Create a population of N amount of individuals.
-def createPopulation(amount):  # TODO: Add comments
-    population = []
-    for x in range(0, amount):
-        population.append(createIndividual())
+def createPopulation(random, amount, parents):  # TODO: Add comments
+    #  If the population's individuals are random.
+    if random:
+        population = []
+        for x in range(0, amount):
+            population.append(createIndividual(True, None))
+
+    #  If the population's individuals have to be crossed with parents
+    else:
+        population = []
+        for x in range(0, amount):
+            population.append(createIndividual(False, parents))
     return population
 
 
-#  For each individual, there is a chance for each gene to mutate to the same or a different gene.
-def mutate(individual, chance):  # TODO: Finish this
-    for table in individual:
-        for gene in table:
-            randint(0, 100)
-            if randint < chance:
-                if len(table) == 100:
-                    gene = randint(0, 3)
-                else:
-                    gene = randint(0, 2)
+#  For each individual, there is a chance for each row of genes to mutate to the same or a different gene.
+def mutate(individual, severity):  # TODO: Finish this
+
+    print(individual)
+
+    mutate_repeat = True
+    while mutate_repeat:
+        tableIndex = randint(1, len(individual)) - 1
+        randTable = individual[tableIndex]  # Select random table
+
+        rowIndex = randint(1, len(randTable)) - 1
+        randRow = randTable[rowIndex]  # Select random row from table
+
+        if severity == 0:
+            geneIndex = randint(1, len(randRow)) - 1
+
+            # If the chosen table is for hard/soft decks
+            if tableIndex != 2:
+                individual[tableIndex][rowIndex][geneIndex] = randint(0, 3)
+
+            # If the chosen table is for splitting
+            else:
+                individual[tableIndex][rowIndex][geneIndex] = randint(0, 4)
+
+        # If the chosen table is for hard/soft decks
+        if tableIndex != 2:
+            individual[tableIndex][rowIndex] = np.random.randint(0, 3, (1, len(randRow)))
+
+        # If the chosen table is for splitting
+        else:
+            individual[tableIndex][rowIndex] = np.random.randint(0, 4, (1, len(randRow)))
+
+        mut_again = randint(0, 100)
+        if mut_again < 25:
+            continue
+        else:
+            mutate_repeat = False
+
+    print(individual)
+
     return individual
 
 
 """The fitness is calculated by making each individual play the game X amount of times.
-    The amount of money won/lost will be its fitness value, that means that the fitness
-    can be a negative value."""
+    The average amount of money won/lost will be its fitness value, that means that the 
+    fitness can be a negative value."""
 
 
 def calcFitness(statusDict, betDict):
@@ -110,8 +180,28 @@ def calcFitness(statusDict, betDict):
     return fitnessDict
 
 
-def cross(individual1, individual2):  # TODO: Finish this
-    pass
+#  Crosses the individuals with the highest fitness score.
+def getParents(individuals, population):  # TODO: Finish this
+    tempKey = []
+    tempValue = []
+
+    for key in individuals.keys():
+        tempKey.append(key)
+    for value in individuals.values():
+        tempValue.append(value)
+
+    tempValueSorted = tempValue.copy()
+    tempValueSorted.sort()
+
+    fit1, fit2 = tempValueSorted[-1], tempValueSorted[-2]  # Highest and second highest fitness
+    fit1ind, fit2ind = tempValue.index(fit1), tempValue.index(
+        fit2)  # Get index of the highest and second highest fitness
+    ind1number, ind2number = tempKey[fit1ind], tempKey[fit2ind]  # Get individuals with highest fitness
+
+    ind1, ind2 = population[ind1number - 1], population[ind2number - 1]
+
+    parents = [ind1, ind2]
+    return parents
 
 
 def makeDecision(individual, pDeck, dDeck):
@@ -121,7 +211,8 @@ def makeDecision(individual, pDeck, dDeck):
     rowCount = -1
 
     #  If the player gets a deck with two of the same cards.
-    if len(pDeck) == 2 and (pDeck[0] == pDeck[1] or ((pDeck[0] == 'a' and pDeck[1] == 'A') or (pDeck[0] == 'A' and pDeck[1] == 'a'))):
+    if len(pDeck) == 2 and (
+            pDeck[0] == pDeck[1] or ((pDeck[0] == 'a' and pDeck[1] == 'A') or (pDeck[0] == 'A' and pDeck[1] == 'a'))):
         for pValueGuess in range(22, 3, -2):
             rowCount += 1
             columnCount = -1
@@ -155,7 +246,6 @@ def makeDecision(individual, pDeck, dDeck):
 
 
 def simulate(individual, betAmount):
-
     # status = -1 = dealer win ; 0 = push (equal valued decks) ; 1 = player win.
     dDeck = bjs.dealerInitial()  # Give dealer two cards.
 
@@ -331,14 +421,20 @@ def simulate(individual, betAmount):
 
 
 def main():
+    generationAmount = input("Amount of generations: ")
+    generationAmount = int(generationAmount)
+
     populationAmount = input("Amount of individuals in population: ")
     populationAmount = int(populationAmount)
 
     simAmount = input("Amount of simulated games per individual: ")
     simAmount = int(simAmount)
 
-    mut_chance = input("Chance for each gene to mutate: ")
+    mut_chance = input("Chance for an individual to mutate one or multiple genes (in %): ")
     mut_chance = int(mut_chance)
+
+    mut_severity = input("(In numbers 0 or 1, with 0 being lowest severity)\nSeverity of mutation when it occurs: ")
+    mut_severity = int(mut_severity)
 
     betAmountInput = input("Bet: ")
     betAmountInput = int(betAmountInput)
@@ -346,38 +442,50 @@ def main():
     global start_time
     start_time = time.time()
 
-    population = createPopulation(populationAmount)
+    population = createPopulation(True, populationAmount, None)
 
     #  Simulate x amount of games for every individual in a population and
     #  put all results (win, loss, push) in a dictionary.
-    statusDict = {}
-    indCount = 0
-    betDict = {}
-    for individual in population:
-        indCount += 1
-        statusList = []
-        betList = []
-        for x in range(0, simAmount):
-            print("==========================================")
-            print("Simulation", x + 1)
-            print("Individual", indCount)
-            status, betAmount = simulate(individual, betAmountInput)
-            statusList.append(status)
-            betList.append(betAmount)
+    for generation in range(0, generationAmount):
+        print("====================================================================================\n"
+              f"====================================Generation {generation}====================================\n"
+              "====================================================================================")
+        statusDict = {}
+        indCount = 0
+        betDict = {}
+        for individual in population:
+            indCount += 1
+            statusList = []
+            betList = []
+            for x in range(0, simAmount):
+                print("==========================================")
+                print("Simulation", x + 1)
+                print("Individual", indCount)
+                status, betAmount = simulate(individual, betAmountInput)
+                statusList.append(status)
+                betList.append(betAmount)
 
-        statusDict[indCount] = statusList.copy()
-        betDict[indCount] = betList.copy()
+            statusDict[indCount] = statusList.copy()
+            betDict[indCount] = betList.copy()
 
-    print("StatusDict:", statusDict)
-    print("BetDict:", betDict)
+        #  Calculate the fitness for each individual
+        fitnessDict = calcFitness(statusDict, betDict)
+        parents = getParents(fitnessDict, population)
+        population = createPopulation(False, populationAmount, parents)
 
-    #  Calculate the fitness for each individual
-    calcFitness(statusDict, betDict)
+        #  Mutate individuals
+        for individual in population:
+            mutRoll = randint(0, 100)
+            if mutRoll < mut_chance:
+                mutate(individual, mut_severity)
+            else:
+                continue
+
+
 
 
 start_time = 0
 if __name__ == '__main__':
-
     main()
 
     end_time = time.time()
