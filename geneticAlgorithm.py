@@ -10,7 +10,7 @@ cardValues = {
 }
 
 highest_fit = {}  # Dictionary with the highest fitness individual of each generation
-higest_fit_ind = {}
+highest_fit_ind = {}
 fitGen = 0
 
 
@@ -141,7 +141,7 @@ def calcFitness(statusDict, betDict):
 
             #  If the deck wasn't split in simulation
             if type(result) == int:
-
+                print(result, type(result))
                 #  If player lost
                 if result == -1:
                     fitness -= betDict[counter][counter2]
@@ -159,6 +159,7 @@ def calcFitness(statusDict, betDict):
 
             #  If the deck was split in simulation
             if type(result) == list:
+                print(result, type(result))
 
                 #  For each deck in the simulation.
                 for splitResult in result:
@@ -182,7 +183,7 @@ def calcFitness(statusDict, betDict):
 
     indCounter = 1
     for results in fitnessTemp.values():
-        fitnessDict[indCounter] = sum(results) / len(results)
+        fitnessDict[indCounter] = sum(results)
         indCounter += 1
 
     print("fitness Temp:", fitnessTemp)
@@ -217,7 +218,7 @@ def getParents(individuals, population):
     ind1, ind2 = population[ind1number - 1], population[ind2number - 1]
 
     parents = [ind1, ind2]
-    higest_fit_ind[fitGen] = parents[0]
+    highest_fit_ind[fitGen] = parents[0]
     return parents
 
 
@@ -505,6 +506,13 @@ if __name__ == '__main__':
     main()
     for k, v in highest_fit.items():
         print(k, v, "\n")
+    for k, v in highest_fit_ind.items():
+        print(k, v, "\n")
+
+    #  Save the best individual out of all the generations.
+    bestIndiv = max(highest_fit, key=highest_fit.get)
+    bestInd = highest_fit_ind[bestIndiv]
+    np.savez('highestIndividual.npz', *bestInd)
 
     end_time = time.time()
     print("==========================================\nExecution time:\n",
