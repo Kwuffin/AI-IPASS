@@ -9,6 +9,10 @@ cardValues = {
     'J': 10, 'Q': 10, 'K': 10
 }
 
+highest_fit = {}  # Dictionary with the highest fitness individual of each generation
+higest_fit_ind = {}
+fitGen = 0
+
 
 #  Create an individual of our population, where the genes are the
 #  decisions whether the AI wants to stand, hit, split or double down.
@@ -61,7 +65,7 @@ def createIndividual(random, parents):
 
 
 #  Create a population of N amount of individuals.
-def createPopulation(random, amount, parents):  # TODO: Add comments
+def createPopulation(random, amount, parents):
     #  If the population's individuals are random.
     if random:
         population = []
@@ -77,10 +81,7 @@ def createPopulation(random, amount, parents):  # TODO: Add comments
 
 
 #  For each individual, there is a chance for each row of genes to mutate to the same or a different gene.
-def mutate(individual, severity):  # TODO: Finish this
-
-    print(individual)
-
+def mutate(individual, severity):
     mutate_repeat = True
     while mutate_repeat:
         tableIndex = randint(1, len(individual)) - 1
@@ -108,13 +109,12 @@ def mutate(individual, severity):  # TODO: Finish this
         else:
             individual[tableIndex][rowIndex] = np.random.randint(0, 4, (1, len(randRow)))
 
+        #  25% chance to mutate another gene/row of genes
         mut_again = randint(0, 100)
         if mut_again < 25:
             continue
         else:
             mutate_repeat = False
-
-    print(individual)
 
     return individual
 
@@ -147,6 +147,11 @@ def calcFitness(statusDict, betDict):
                     fitness -= betDict[counter][counter2]
                     temp.append(fitness)
 
+                #  If player and dealer have equal values
+                elif result == 0:
+                    fitness = betDict[counter][counter2]
+                    temp.append(fitness)
+
                 #  If player won
                 elif result == 1:
                     fitness += betDict[counter][counter2]
@@ -161,6 +166,11 @@ def calcFitness(statusDict, betDict):
                     #  If player lost
                     if splitResult == -1:
                         fitness -= betDict[counter][counter2]
+                        temp.append(fitness)
+
+                    #  If player and dealer have equal values
+                    elif result == 0:
+                        fitness = betDict[counter][counter2]
                         temp.append(fitness)
 
                     #  If player won
@@ -181,7 +191,10 @@ def calcFitness(statusDict, betDict):
 
 
 #  Crosses the individuals with the highest fitness score.
-def getParents(individuals, population):  # TODO: Finish this
+def getParents(individuals, population):
+    global fitGen
+    fitGen += 1
+
     tempKey = []
     tempValue = []
 
@@ -194,13 +207,17 @@ def getParents(individuals, population):  # TODO: Finish this
     tempValueSorted.sort()
 
     fit1, fit2 = tempValueSorted[-1], tempValueSorted[-2]  # Highest and second highest fitness
-    fit1ind, fit2ind = tempValue.index(fit1), tempValue.index(
-        fit2)  # Get index of the highest and second highest fitness
+    highest_fit[fitGen] = fit1
+    fit1ind, fit2ind = tempValue.index(fit1), tempValue.index(fit2)  # Get index of the highest and second highest fitness
     ind1number, ind2number = tempKey[fit1ind], tempKey[fit2ind]  # Get individuals with highest fitness
+
+    print(ind1number, fit1)
+    print(ind2number, fit2)
 
     ind1, ind2 = population[ind1number - 1], population[ind2number - 1]
 
     parents = [ind1, ind2]
+    higest_fit_ind[fitGen] = parents[0]
     return parents
 
 
@@ -448,8 +465,9 @@ def main():
     #  put all results (win, loss, push) in a dictionary.
     for generation in range(0, generationAmount):
         print("====================================================================================\n"
-              f"====================================Generation {generation}====================================\n"
+              f"===================================Generation {generation}===================================\n"
               "====================================================================================")
+
         statusDict = {}
         indCount = 0
         betDict = {}
@@ -482,11 +500,11 @@ def main():
                 continue
 
 
-
-
 start_time = 0
 if __name__ == '__main__':
     main()
+    for k, v in highest_fit.items():
+        print(k, v, "\n")
 
     end_time = time.time()
     print("==========================================\nExecution time:\n",
