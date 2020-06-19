@@ -32,33 +32,43 @@ def createIndividual(random, parents):
         ]
         return genes
 
+    #  Crosses two parents
     else:
         #  Hard decks
         hard = []
         for x in range(0, 16):
-            parentChoice = randint(0, 100)
-            if parentChoice < 50:
-                hard.append(parents[0][0][x])
-            elif parentChoice >= 50:
-                hard.append(parents[1][0][x])
+            temp = []
+            for y in range(0, 10):
+                parentChoice = randint(0, 100)
+                if parentChoice < 50:
+                    temp.append(parents[0][0].item(x, y))
+                elif parentChoice >= 50:
+                    temp.append(parents[1][0].item(x, y))
+            hard.append(np.array(temp.copy()))
 
         #  Soft decks
         soft = []
         for x in range(0, 8):
-            parentChoice = randint(0, 100)
-            if parentChoice < 50:
-                soft.append(parents[0][1][x])
-            elif parentChoice >= 50:
-                soft.append(parents[1][1][x])
+            temp = []
+            for y in range(0, 10):
+                parentChoice = randint(0, 100)
+                if parentChoice < 50:
+                    temp.append(parents[0][1].item(x, y))
+                elif parentChoice >= 50:
+                    temp.append(parents[1][1].item(x, y))
+            soft.append(np.array(temp.copy()))
 
         #  Splitting decks
         split = []
         for x in range(0, 10):
-            parentChoice = randint(0, 100)
-            if parentChoice < 50:
-                split.append(parents[0][2][x])
-            elif parentChoice >= 50:
-                split.append(parents[1][2][x])
+            temp = []
+            for y in range(0, 10):
+                parentChoice = randint(0, 100)
+                if parentChoice < 50:
+                    temp.append(parents[0][2].item(x, y))
+                elif parentChoice >= 50:
+                    temp.append(parents[1][2].item(x, y))
+            split.append(np.array(temp.copy()))
 
         genes = [np.array(hard).copy(), np.array(soft).copy(), np.array(split).copy()]
 
@@ -192,7 +202,7 @@ def calcFitness(statusDict, betDict):
     return fitnessDict
 
 
-#  Crosses the individuals with the highest fitness score.
+#  Gets the individuals with the highest fitness score.
 def getParents(individuals, population):
     global fitGen
     fitGen += 1
