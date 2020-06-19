@@ -2,6 +2,7 @@ import blackjackSim as bjs
 from random import randint
 import numpy as np
 import time
+import multiprocessing as mp
 
 cardValues = {
     'A': 11, 'a': 1,
@@ -95,11 +96,11 @@ def mutate(individual, severity):
 
             # If the chosen table is for hard/soft decks
             if tableIndex != 2:
-                individual[tableIndex][rowIndex][geneIndex] = randint(0, 3)
+                individual[tableIndex][rowIndex, geneIndex] = randint(0, 3)
 
             # If the chosen table is for splitting
             else:
-                individual[tableIndex][rowIndex][geneIndex] = randint(0, 4)
+                individual[tableIndex][rowIndex, geneIndex] = randint(0, 4)
 
         # If the chosen table is for hard/soft decks
         if tableIndex != 2:
@@ -465,10 +466,6 @@ def main():
     #  Simulate x amount of games for every individual in a population and
     #  put all results (win, loss, push) in a dictionary.
     for generation in range(0, generationAmount):
-        print("====================================================================================\n"
-              f"===================================Generation {generation}===================================\n"
-              "====================================================================================")
-
         statusDict = {}
         indCount = 0
         betDict = {}
@@ -476,10 +473,13 @@ def main():
             indCount += 1
             statusList = []
             betList = []
+
             for x in range(0, simAmount):
                 print("==========================================")
-                print("Simulation", x + 1)
-                print("Individual", indCount)
+                print("Generation:", generation, "/", generationAmount)
+                print("Individual", indCount, "/", len(population))
+                print("Simulation", x + 1, "/", simAmount)
+
                 status, betAmount = simulate(individual, betAmountInput)
                 statusList.append(status)
                 betList.append(betAmount)
