@@ -10,8 +10,8 @@ cardValues = {
     'J': 10, 'Q': 10, 'K': 10
 }
 
-highest_fit = {}  # Dictionary with the highest fitness individual of each generation
-highest_fit_ind = {}
+highest_fit = {}  # Dictionary with the highest fitness individual of each generation.
+highest_fit_ind = {}  # Dictionary with the genes of the fittest individual of each generation.
 fitGen = 0
 
 
@@ -152,7 +152,6 @@ def calcFitness(statusDict, betDict):
 
             #  If the deck wasn't split in simulation
             if type(result) == int:
-                print(result, type(result))
                 #  If player lost
                 if result == -1:
                     fitness -= betDict[counter][counter2]
@@ -170,7 +169,6 @@ def calcFitness(statusDict, betDict):
 
             #  If the deck was split in simulation
             if type(result) == list:
-                print(result, type(result))
 
                 #  For each deck in the simulation.
                 for splitResult in result:
@@ -222,9 +220,6 @@ def getParents(individuals, population):
     highest_fit[fitGen] = fit1
     fit1ind, fit2ind = tempValue.index(fit1), tempValue.index(fit2)  # Get index of the highest and second highest fitness
     ind1number, ind2number = tempKey[fit1ind], tempKey[fit2ind]  # Get individuals with highest fitness
-
-    print(ind1number, fit1)
-    print(ind2number, fit2)
 
     ind1, ind2 = population[ind1number - 1], population[ind2number - 1]
 
@@ -514,10 +509,14 @@ def main():
 start_time = 0
 if __name__ == '__main__':
     main()
+
+    #  Print the fitness score of the fittest individual of each generation
     for k, v in highest_fit.items():
-        print(k, v, "\n")
+        print(k, v)
+
+    #  Print the genes of the fittest individual of each generation
     for k, v in highest_fit_ind.items():
-        print(k, v, "\n")
+        print(k, v)
 
     #  Save the best individual out of all the generations.
     bestIndiv = max(highest_fit, key=highest_fit.get)
