@@ -1,4 +1,4 @@
-# AI-IPASS
+# AI-IPASS PROJECT
 
 Genetic Algorithm playing blackjack
 
