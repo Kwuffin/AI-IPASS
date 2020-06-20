@@ -31,3 +31,32 @@ class TestAlg(unittest.TestCase):
     def test_population_length(self):
         population = ga.createPopulation(True, 5, None)
         self.assertEqual(len(population), 5)
+
+    #  Tests if crossover individuals only get genes from both parents
+    def test_crossover(self):
+        p1 = ga.createIndividual(True, None)
+        p2 = ga.createIndividual(True, None)
+
+        parents = [p1, p2]
+
+        population = ga.createPopulation(False, 5, parents)
+
+        for individual in population:
+            tableCounter = -1
+
+            for table in individual:
+                rowCounter = -1
+                tableCounter += 1
+
+                for row in table:
+                    geneCounter = -1
+                    rowCounter += 1
+
+                    for gene in row:
+                        geneCounter += 1
+
+                        self.assertTrue(gene == p1[tableCounter].item(rowCounter, geneCounter) or
+                                        gene == p2[tableCounter].item(rowCounter, geneCounter))
+
+                self.assertFalse(np.array_equal(individual[tableCounter], p1[tableCounter]) or
+                                 np.array_equal(individual[tableCounter], p2[tableCounter]))
