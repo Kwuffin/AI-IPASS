@@ -1,4 +1,4 @@
-import blackjackSim as bjs
+import blackjackSim as bjs  # Blackjack game that deals cards, etc.
 from random import randint
 import numpy as np
 import time
@@ -201,30 +201,18 @@ def calcFitness(statusDict, betDict):
 
 
 #  Gets the individuals with the highest fitness score.
-def getParents(individuals, population):
+def getParents(fitnessDict, population):
     global fitGen
     fitGen += 1
 
-    tempKey = []
-    tempValue = []
+    highestInd1 = max(fitnessDict, key=fitnessDict.get)  # Get the key of the individual with highest fitness (value)
+    fitnessDict.pop(highestInd1)  # Remove the individual with the highest fitness
+    highestInd2 = max(fitnessDict, key=fitnessDict.get)
 
-    for key in individuals.keys():
-        tempKey.append(key)
-    for value in individuals.values():
-        tempValue.append(value)
+    parents = [population[highestInd1-1], population[highestInd2-1]]  # Append two highest individuals to list
 
-    tempValueSorted = tempValue.copy()
-    tempValueSorted.sort()
+    highest_fit_ind[fitGen] = parents[0]  # Append fittest individual to dictionary
 
-    fit1, fit2 = tempValueSorted[-1], tempValueSorted[-2]  # Highest and second highest fitness
-    highest_fit[fitGen] = fit1
-    fit1ind, fit2ind = tempValue.index(fit1), tempValue.index(fit2)  # Get index of the highest and second highest fitness
-    ind1number, ind2number = tempKey[fit1ind], tempKey[fit2ind]  # Get individuals with highest fitness
-
-    ind1, ind2 = population[ind1number - 1], population[ind2number - 1]
-
-    parents = [ind1, ind2]
-    highest_fit_ind[fitGen] = parents[0]
     return parents
 
 
