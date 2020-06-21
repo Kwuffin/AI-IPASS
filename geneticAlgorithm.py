@@ -211,6 +211,7 @@ def getParents(fitnessDict, population):
 
     parents = [population[highestInd1-1], population[highestInd2-1]]  # Append two highest individuals to list
 
+    highest_fit[fitGen] = max(fitnessDict.values())
     highest_fit_ind[fitGen] = parents[0]  # Append fittest individual to dictionary
 
     return parents
