@@ -159,7 +159,7 @@ def calcFitness(statusDict, betDict):
 
                 #  If player and dealer have equal values
                 elif result == 0:
-                    fitness = betDict[counter][counter2]
+                    fitness = 0
                     temp.append(fitness)
 
                 #  If player won
