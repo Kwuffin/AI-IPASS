@@ -193,7 +193,12 @@ def splitData(master, data):
 
 
 def main():
-    data = np.load('highestIndividual.npz')
+    try:
+        data = np.load('highestIndividual.npz')
+    except FileNotFoundError:
+        print("Could not get an individual; file not found\n"
+              "Try running the algorithm (again).")
+        exit()
 
     lst = [data[key] for key in data]
 
