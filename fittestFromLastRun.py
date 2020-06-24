@@ -31,18 +31,10 @@ def hardDeck(data):
         label = Label(hard, text=column)
         label.grid(row=counter, column=0)
 
-        # Equal spacing between all columns and rows
-        colCount, rowCount = hard.grid_size()
-        for c in range(colCount):
-            hard.grid_columnconfigure(c, minsize=50)
-
-        for r in range(rowCount):
-            hard.grid_columnconfigure(r, minsize=50)
-
     hardData(hard, data[0].tolist())
 
     hard.title("Hard decks")
-    hard.geometry('600x500')
+    hard.geometry('280x380')
 
 
 def softDeck(data):
@@ -61,18 +53,10 @@ def softDeck(data):
         label = Label(soft, text=f"A-{column}")
         label.grid(row=counter, column=0)
 
-        # Equal spacing between all columns and rows
-        colCount, rowCount = soft.grid_size()
-        for c in range(colCount):
-            soft.grid_columnconfigure(c, minsize=50)
-
-        for r in range(rowCount):
-            soft.grid_columnconfigure(r, minsize=50)
-
     softData(soft, data[1].tolist())
 
     soft.title("Soft decks")
-    soft.geometry('600x250')
+    soft.geometry('300x220')
 
 
 def splitDeck(data):
@@ -94,18 +78,10 @@ def splitDeck(data):
             label = Label(split, text=f"{column}-{column}")
         label.grid(row=counter, column=0)
 
-        # Equal spacing between all columns and rows
-        colCount, rowCount = split.grid_size()
-        for c in range(colCount):
-            split.grid_columnconfigure(c, minsize=50)
-
-        for r in range(rowCount):
-            split.grid_columnconfigure(r, minsize=50)
-
     splitData(split, data[2].tolist())
 
     split.title("Split decks")
-    split.geometry('600x250')
+    split.geometry('300x250')
 
 
 def hardData(master, data):
@@ -127,13 +103,6 @@ def hardData(master, data):
 
             label.grid(row=rowNr, column=geneNr)
 
-            colCount, rowCount = master.grid_size()
-            for c in range(colCount):
-                master.grid_columnconfigure(c, minsize=50)
-
-            for r in range(rowCount):
-                master.grid_columnconfigure(r, minsize=50)
-
 
 def softData(master, data):
     rowNr = 0
@@ -153,13 +122,6 @@ def softData(master, data):
                 label['bg'] = 'deep sky blue'
 
             label.grid(row=rowNr, column=geneNr)
-
-            colCount, rowCount = master.grid_size()
-            for c in range(colCount):
-                master.grid_columnconfigure(c, minsize=50)
-
-            for r in range(rowCount):
-                master.grid_columnconfigure(r, minsize=50)
 
 
 def splitData(master, data):
@@ -183,13 +145,6 @@ def splitData(master, data):
                 label['bg'] = 'yellow'
 
             label.grid(row=rowNr, column=geneNr)
-
-            colCount, rowCount = master.grid_size()
-            for c in range(colCount):
-                master.grid_columnconfigure(c, minsize=50)
-
-            for r in range(rowCount):
-                master.grid_columnconfigure(r, minsize=50)
 
 
 def main():
