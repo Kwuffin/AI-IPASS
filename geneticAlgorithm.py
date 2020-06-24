@@ -2,7 +2,6 @@ import blackjackSim as bjs  # Blackjack game that deals cards, etc.
 from random import randint
 import numpy as np
 import time
-import multiprocessing as mp
 
 cardValues = {
     'A': 11, 'a': 1,
@@ -88,6 +87,9 @@ def createPopulation(random, amount, parents):
         population = []
         for x in range(0, amount):
             population.append(createIndividual(False, parents))
+
+        for parent in parents:
+            population.append(parent)
     return population
 
 
@@ -106,19 +108,21 @@ def mutate(individual, severity):
 
             # If the chosen table is for hard/soft decks
             if tableIndex != 2:
-                individual[tableIndex][rowIndex, geneIndex] = randint(0, 3)
+                individual[tableIndex][rowIndex, geneIndex] = randint(0, 2)
 
             # If the chosen table is for splitting
             else:
-                individual[tableIndex][rowIndex, geneIndex] = randint(0, 4)
+                individual[tableIndex][rowIndex, geneIndex] = randint(0, 3)
 
-        # If the chosen table is for hard/soft decks
-        if tableIndex != 2:
-            individual[tableIndex][rowIndex] = np.random.randint(0, 3, (1, len(randRow)))
-
-        # If the chosen table is for splitting
         else:
-            individual[tableIndex][rowIndex] = np.random.randint(0, 4, (1, len(randRow)))
+
+            # If the chosen table is for hard/soft decks
+            if tableIndex != 2:
+                individual[tableIndex][rowIndex] = np.random.randint(0, 3, (1, len(randRow)))
+
+            # If the chosen table is for splitting
+            else:
+                individual[tableIndex][rowIndex] = np.random.randint(0, 4, (1, len(randRow)))
 
         #  25% chance to mutate another gene/row of genes
         mut_again = randint(0, 100)
@@ -195,8 +199,8 @@ def calcFitness(statusDict, betDict):
         fitnessDict[indCounter] = sum(results)
         indCounter += 1
 
-    print("fitness Temp:", fitnessTemp)
-    print("FitnessDict:", fitnessDict)
+    # print("fitness Temp:", fitnessTemp)
+    # print("FitnessDict:", fitnessDict)
     return fitnessDict
 
 
@@ -232,7 +236,7 @@ def makeDecision(individual, pDeck, dDeck):
             for dValueGuess in range(2, 12):
                 columnCount += 1
                 if dValue == dValueGuess and pValue == pValueGuess:
-                    print(individual[2])
+                    # print(individual[2])
                     return individual[2].item(rowCount, columnCount)
 
     #  If the player gets a soft deck
@@ -243,7 +247,7 @@ def makeDecision(individual, pDeck, dDeck):
             for dValueGuess in range(2, 12):
                 columnCount += 1
                 if dValue == dValueGuess and pValue == pValueGuess:
-                    print(individual[1])
+                    # print(individual[1])
                     return individual[1].item(rowCount, columnCount)
 
     #  If the player gets a hard deck
@@ -254,7 +258,7 @@ def makeDecision(individual, pDeck, dDeck):
             for dValueGuess in range(2, 12):
                 columnCount += 1
                 if dValue == dValueGuess and pValue == pValueGuess:
-                    print(individual[0])
+                    # print(individual[0])
                     return individual[0].item(rowCount, columnCount)
 
 
@@ -282,10 +286,7 @@ def simulate(individual, betAmount):
         if bjs.checkBlackjack(dDeck):
             break
 
-        print("Bot:", bDeck)
-        print("Dealer:", dDeck)
-        print(botChoice)
-        print(makeDecision(individual, bDeck, dDeck))
+        # print(makeDecision(individual, bDeck, dDeck))
 
         #  Make a new choice with the new deck.
         botChoice = makeDecision(individual, bDeck, dDeck)
@@ -457,6 +458,8 @@ def main():
 
     population = createPopulation(True, populationAmount, None)
 
+    generationCounter = -1
+
     #  Simulate x amount of games for every individual in a population and
     #  put all results (win, loss, push) in a dictionary.
     for generation in range(0, generationAmount):
@@ -469,10 +472,10 @@ def main():
             betList = []
 
             for x in range(0, simAmount):
-                print("==========================================")
-                print("Generation:", generation, "/", generationAmount)
-                print("Individual", indCount, "/", len(population))
-                print("Simulation", x + 1, "/", simAmount)
+                # print("==========================================")
+                # print("Generation:", generation, "/", generationAmount)
+                # print("Individual", indCount, "/", len(population))
+                # print("Simulation", x + 1, "/", simAmount)
 
                 status, betAmount = simulate(individual, betAmountInput)
                 statusList.append(status)
@@ -486,6 +489,9 @@ def main():
         parents = getParents(fitnessDict, population)
         population = createPopulation(False, populationAmount, parents)
 
+        generationCounter += 1
+        average_fit[generationCounter] = sum(fitnessDict.values()) / len(fitnessDict)
+
         #  Mutate individuals
         for individual in population:
             mutRoll = randint(0, 100)
@@ -497,6 +503,7 @@ def main():
 
 start_time = 0
 if __name__ == '__main__':
+    average_fit = {}
     main()
 
     #  Print the fitness score of the fittest individual of each generation
@@ -516,3 +523,18 @@ if __name__ == '__main__':
     print("==========================================\nExecution time:\n",
           (end_time - start_time) // 60, "minutes,",
           (end_time - start_time) % 60, "seconds")
+
+    print(average_fit)
+
+    # Quick single individual fitness function
+    statusList = []
+    betList = []
+    singleDict = {}
+    for x in range(0, 100):
+        status, betAmount = simulate(bestInd, 400)
+        statusList.append(status)
+        betList.append(betAmount)
+    singleSimDict = {1: statusList.copy()}
+    singleBetDict = {1: betList.copy()}
+    singleFitnessDict = calcFitness(singleSimDict, singleBetDict)
+    print('Best individual fitness: '+str(singleFitnessDict[1]))
