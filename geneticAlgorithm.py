@@ -38,11 +38,8 @@ def createIndividual(random, parents):
         for x in range(0, 16):
             temp = []
             for y in range(0, 10):
-                parentChoice = randint(0, 100)
-                if parentChoice < 50:
-                    temp.append(parents[0][0].item(x, y))
-                elif parentChoice >= 50:
-                    temp.append(parents[1][0].item(x, y))
+                randomParent = randint(1, len(parents)) - 1
+                temp.append(parents[randomParent][0].item(x, y))
             hard.append(np.array(temp.copy()))
 
         #  Soft decks
@@ -50,11 +47,8 @@ def createIndividual(random, parents):
         for x in range(0, 8):
             temp = []
             for y in range(0, 10):
-                parentChoice = randint(0, 100)
-                if parentChoice < 50:
-                    temp.append(parents[0][1].item(x, y))
-                elif parentChoice >= 50:
-                    temp.append(parents[1][1].item(x, y))
+                randomParent = randint(1, len(parents)) - 1
+                temp.append(parents[randomParent][1].item(x, y))
             soft.append(np.array(temp.copy()))
 
         #  Splitting decks
@@ -62,11 +56,8 @@ def createIndividual(random, parents):
         for x in range(0, 10):
             temp = []
             for y in range(0, 10):
-                parentChoice = randint(0, 100)
-                if parentChoice < 50:
-                    temp.append(parents[0][2].item(x, y))
-                elif parentChoice >= 50:
-                    temp.append(parents[1][2].item(x, y))
+                randomParent = randint(1, len(parents)) - 1
+                temp.append(parents[randomParent][2].item(x, y))
             split.append(np.array(temp.copy()))
 
         genes = [np.array(hard).copy(), np.array(soft).copy(), np.array(split).copy()]
@@ -198,9 +189,6 @@ def calcFitness(statusDict, betDict):
     for results in fitnessTemp.values():
         fitnessDict[indCounter] = sum(results)
         indCounter += 1
-
-    # print("fitness Temp:", fitnessTemp)
-    # print("FitnessDict:", fitnessDict)
     return fitnessDict
 
 
@@ -214,6 +202,32 @@ def getParents(fitnessDict, population):
     highestInd2 = max(fitnessDict, key=fitnessDict.get)
 
     parents = [population[highestInd1-1], population[highestInd2-1]]  # Append two highest individuals to list
+
+    highest_fit[fitGen] = max(fitnessDict.values())
+    highest_fit_ind[fitGen] = parents[0]  # Append fittest individual to dictionary
+
+    return parents
+
+
+#  Picks a group of fit individuals as parents for the next generation.
+def getParents2(fitnessDict, population):
+    global fitGen
+    fitGen += 1
+
+    parentKeys = []
+
+    retain_rate = 10
+    parent_size = len(population)/retain_rate
+    parent_size = int(parent_size)
+    for individual in range(parent_size):
+        ind = max(fitnessDict, key=fitnessDict.get)
+        parentKeys.append(ind)
+        fitnessDict.pop(ind)
+
+    parents = []
+
+    for key in parentKeys:
+        parents.append(population[key-1])
 
     highest_fit[fitGen] = max(fitnessDict.values())
     highest_fit_ind[fitGen] = parents[0]  # Append fittest individual to dictionary
@@ -486,7 +500,7 @@ def main():
 
         #  Calculate the fitness for each individual
         fitnessDict = calcFitness(statusDict, betDict)
-        parents = getParents(fitnessDict, population)
+        parents = getParents2(fitnessDict, population)
         population = createPopulation(False, populationAmount, parents)
 
         generationCounter += 1
@@ -499,6 +513,8 @@ def main():
                 mutate(individual, mut_severity)
             else:
                 continue
+
+        print(f"Generation {generationCounter} complete.")
 
 
 start_time = 0

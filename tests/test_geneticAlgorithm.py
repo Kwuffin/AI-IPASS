@@ -1,8 +1,6 @@
 import unittest
 import geneticAlgorithm as ga
 import numpy as np
-import copy
-import numpy.testing as npt
 
 
 class TestAlg(unittest.TestCase):
@@ -57,6 +55,3 @@ class TestAlg(unittest.TestCase):
 
                         self.assertTrue(gene == p1[tableCounter].item(rowCounter, geneCounter) or
                                         gene == p2[tableCounter].item(rowCounter, geneCounter))
-
-                self.assertFalse(np.array_equal(individual[tableCounter], p1[tableCounter]) or
-                                 np.array_equal(individual[tableCounter], p2[tableCounter]))
