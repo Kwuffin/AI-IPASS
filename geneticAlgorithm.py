@@ -2,6 +2,7 @@ import blackjackSim as bjs  # Blackjack game that deals cards, etc.
 from random import randint
 import numpy as np
 import time
+from matplotlib import pyplot as plt
 
 cardValues = {
     'A': 11, 'a': 1,
@@ -446,6 +447,23 @@ def simulate(individual, betAmount):
         return deckStatus, betAmount
 
 
+#  Plot the fitness over each generation
+def plot(fitnesses, generations):
+    fitnessList = []
+    generationList = []
+
+    for generation in range(generations):
+        generationList.append(generation)
+
+    for fitness in fitnesses.values():
+        fitnessList.append(fitness)
+
+    plt.plot(generationList, fitnessList)
+    plt.xlabel("Generation")
+    plt.ylabel("Fitness")
+    plt.show()
+
+
 def main():
     generationAmount = input("Amount of generations: ")
     generationAmount = int(generationAmount)
@@ -510,11 +528,13 @@ def main():
 
         print(f"Generation {generationCounter} / {generationAmount} complete.")
 
+    return generationAmount
+
 
 start_time = 0
 if __name__ == '__main__':
     average_fit = {}
-    main()
+    generationAmount = main()
 
     #  Print the fitness score of the fittest individual of each generation
     for k, v in highest_fit.items():
@@ -548,3 +568,5 @@ if __name__ == '__main__':
     singleBetDict = {1: betList.copy()}
     singleFitnessDict = calcFitness(singleSimDict, singleBetDict)
     print('Best individual fitness: '+str(singleFitnessDict[1]))
+
+    plot(highest_fit, generationAmount)

@@ -28,6 +28,7 @@ def importBot():
     return [data[key] for key in data]
 
 
+#  Draws a card, and removing a card from the 'stack' (for card-counters)
 def drawCard(deck):
     available = True
     while available:
@@ -74,6 +75,7 @@ def player(bet, dDeck):
     pDecision = "hit"
     drawCard(pDeck)
 
+    #  While decision is to hit.
     while pDecision == "hit":
         drawCard(pDeck)
 
@@ -136,6 +138,7 @@ def player(bet, dDeck):
             return pDecks, bet
 
 
+#  Lets the bot play
 def botPlay(botStrat, dDeck):
     print("====================================================")
     print("Dealer:", dDeck[0], "\n")
@@ -144,6 +147,7 @@ def botPlay(botStrat, dDeck):
     bDeck = []
     drawCard(bDeck)
 
+    # While bot decides to hit
     while botChoice == "hit":
         drawCard(bDeck)
 
@@ -232,6 +236,7 @@ def botPlay(botStrat, dDeck):
             return bDecks
 
 
+#  If the dealer's value is still below 17 after all players stand/bust
 def dealerAfter(deck):
     sleep(1.5)
     print("Dealer:", end=' ')
@@ -246,6 +251,7 @@ def dealerAfter(deck):
         print("Value:", bjs.value(deck), "\n")
 
 
+#  Compare decks against the dealer's deck.
 def evalDecks(deckDict, dDeck, betDict, bDeck):
     player = 0
 

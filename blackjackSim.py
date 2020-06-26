@@ -46,11 +46,13 @@ def value(deck):
     return value
 
 
+#  If the dealer's total value is below 17 after a stand.
 def dealerAfter(deck):
     while value(deck) < 17:
         deck = hit(deck)
 
 
+#  Lower value for Ace cards if necessary
 def checkAce(deck):
     for card in deck:
         deckValue = value(deck)
@@ -60,18 +62,21 @@ def checkAce(deck):
     return deck
 
 
+#  Check for blackjacks
 def checkBlackjack(deck):
     if value(deck) == 21:
         return True
     return False
 
 
+#  Check if deck has bust
 def bust(deck):
     if value(deck) > 21:
         return True
     return False
 
 
+#  Compare the player deck against the dealer's deck
 def compare(pDeck, dDeck):
     dealerWin = 0
     playerWin = 0

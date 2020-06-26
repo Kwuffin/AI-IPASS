@@ -2,7 +2,7 @@ import numpy as np
 from tkinter import *
 
 
-def createWindow(data):
+def createWindow(data):  # Create tkinter window, buttons and labels
     root = Tk()
 
     label = Label(root, text="View strategy for", font=("Helvetica", 16)).pack()
@@ -15,6 +15,7 @@ def createWindow(data):
     root.mainloop()
 
 
+#  Get data for hard decks
 def hardDeck(data):
     hard = Tk()
 
@@ -37,6 +38,7 @@ def hardDeck(data):
     hard.geometry('280x380')
 
 
+#  Get data for soft decks
 def softDeck(data):
     soft = Tk()
 
@@ -59,6 +61,7 @@ def softDeck(data):
     soft.geometry('300x220')
 
 
+#  Get data for split decks
 def splitDeck(data):
     split = Tk()
 
@@ -84,6 +87,7 @@ def splitDeck(data):
     split.geometry('300x250')
 
 
+#  Insert data for hard decks into tkinter window
 def hardData(master, data):
     rowNr = 0
     for row in data:
@@ -104,6 +108,7 @@ def hardData(master, data):
             label.grid(row=rowNr, column=geneNr)
 
 
+#  Insert data for soft decks into tkinter window
 def softData(master, data):
     rowNr = 0
     for row in data:
@@ -124,6 +129,7 @@ def softData(master, data):
             label.grid(row=rowNr, column=geneNr)
 
 
+#  Insert data for split decks into tkinter window
 def splitData(master, data):
     rowNr = 0
     for row in data:
@@ -149,7 +155,7 @@ def splitData(master, data):
 
 def main():
     try:
-        data = np.load('highestIndividual.npz')
+        data = np.load('highestIndividual.npz')  # Load data
     except FileNotFoundError:
         print("Could not get an individual; file not found\n"
               "Try running the algorithm (again).")
