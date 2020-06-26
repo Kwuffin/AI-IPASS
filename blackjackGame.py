@@ -246,35 +246,6 @@ def dealerAfter(deck):
         print("Value:", bjs.value(deck), "\n")
 
 
-def processResult(status, betAfterGame):
-    if type(status) == list:
-
-        deckCounter = 0
-        for splitStatus in status:
-            deckCounter += 1
-            if splitStatus == -1:
-                print(f"Deck {deckCounter}:\n"
-                      f"You lost €{betAfterGame} :(")
-
-            elif splitStatus == 0:
-                print(f"Deck {deckCounter}:\n"
-                      f"Your deck and the dealer's were equal. You received your bet of {betAfterGame} back.")
-
-            elif splitStatus == 1:
-                print(f"Deck {deckCounter}:\n"
-                      f"Congratulations! You won €{betAfterGame}.")
-
-    elif type(status) == int:
-        if status == -1:
-            print(f"You lost €{betAfterGame}, better luck next time!")
-
-        elif status == 0:
-            print(f"Your deck and the dealer's were equal. You received your bet of {betAfterGame} back.")
-
-        elif status == 1:
-            print(f"Congratulations! You won €{betAfterGame}.")
-
-
 def evalDecks(deckDict, dDeck, betDict, bDeck):
     player = 0
 
