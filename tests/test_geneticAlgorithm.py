@@ -1,6 +1,5 @@
 import unittest
 import geneticAlgorithm as ga
-import numpy as np
 
 
 class TestAlg(unittest.TestCase):
