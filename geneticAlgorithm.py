@@ -117,7 +117,7 @@ def mutate(individual, severity):
 
         #  25% chance to mutate another gene/row of genes
         mut_again = randint(0, 100)
-        if mut_again < 25:
+        if mut_again < 50:
             continue
         else:
             mutate_repeat = False
@@ -299,8 +299,6 @@ def simulate(individual, betAmount):
         #  Check for 21
         if bjs.checkBlackjack(dDeck):
             break
-
-        # print(makeDecision(individual, bDeck, dDeck))
 
         #  Make a new choice with the new deck.
         botChoice = makeDecision(individual, bDeck, dDeck)
@@ -486,10 +484,6 @@ def main():
             betList = []
 
             for x in range(0, simAmount):
-                # print("==========================================")
-                # print("Generation:", generation, "/", generationAmount)
-                # print("Individual", indCount, "/", len(population))
-                # print("Simulation", x + 1, "/", simAmount)
 
                 status, betAmount = simulate(individual, betAmountInput)
                 statusList.append(status)
@@ -514,7 +508,7 @@ def main():
             else:
                 continue
 
-        print(f"Generation {generationCounter} complete.")
+        print(f"Generation {generationCounter} / {generationAmount} complete.")
 
 
 start_time = 0
