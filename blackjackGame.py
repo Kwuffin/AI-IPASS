@@ -335,8 +335,6 @@ def main():
 
     bDeck = botPlay(botStrat, dDeck)
 
-    print(bDeck)
-
     evalDecks(playerDecks, dDeck, betsAfter, bDeck)
 
 
