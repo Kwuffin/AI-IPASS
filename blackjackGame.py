@@ -97,9 +97,23 @@ def player(bet, dDeck):
         if pDecision == "double down":
             bet *= 2
             drawCard(pDeck)
+
+            print("You:", end=' ')
+            for card in pDeck:
+                print(card, end=' ')
+            print("")
+            print("Value:", bjs.value(pDeck), "\n")
+
             pDecision = "stand"
 
         if pDecision == "stand" or bjs.bust(pDeck):
+
+            print("You:", end=' ')
+            for card in pDeck:
+                print(card, end=' ')
+            print("")
+            print("Value:", bjs.value(pDeck), "\n")
+
             return pDeck, bet
 
         elif pDecision == "split":
@@ -166,25 +180,38 @@ def botPlay(botStrat, dDeck):
 
         if botDecision == 0:
             botChoice = "stand"
-            print("Bot stands")
+            print("Bot stands\n")
 
         elif botDecision == 1:
             botChoice = "hit"
-            print("Bot hits")
+            print("Bot hits\n")
 
         elif botDecision == 2:
             botChoice = "double down"
-            print("Bot doubles down")
+            print("Bot doubles down\n")
 
         elif botDecision == 3:
             botChoice = "split"
-            print("Bot splits")
+            print("Bot splits\n")
 
         if botChoice == "double down":
             drawCard(bDeck)
             botChoice = "stand"
 
+            print("Bot:", end=' ')
+            for card in bDeck:
+                print(card, end=' ')
+            print("")
+            print("Value:", bjs.value(bDeck), "\n")
+
         if botChoice == "stand" or bjs.bust(bDeck):
+
+            print("Bot:", end=' ')
+            for card in bDeck:
+                print(card, end=' ')
+            print("")
+            print("Value:", bjs.value(bDeck), "\n")
+
             return bDeck
 
         elif botChoice == "split":
@@ -226,6 +253,7 @@ def botPlay(botStrat, dDeck):
                     elif botDecision == 3:
                         botChoice = "split"
                         print("Bot splits\n")
+
 
                     if botChoice == "double down":
                         drawCard(bDeck)
