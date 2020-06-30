@@ -118,7 +118,7 @@ def mutate(individual, severity):
 
         #  25% chance to mutate another gene/row of genes
         mut_again = randint(0, 100)
-        if mut_again < 50:
+        if mut_again < 80:
             continue
         else:
             mutate_repeat = False
@@ -483,6 +483,8 @@ def main():
     betAmountInput = input("Bet: ")
     betAmountInput = int(betAmountInput)
 
+    print("Total amount of simulations:", generationAmount*populationAmount*simAmount)
+
     global start_time
     start_time = time.time()
 
@@ -493,6 +495,7 @@ def main():
     #  Simulate x amount of games for every individual in a population and
     #  put all results (win, loss, push) in a dictionary.
     for generation in range(0, generationAmount):
+        genTime = time.time()
         statusDict = {}
         indCount = 0
         betDict = {}
@@ -526,7 +529,7 @@ def main():
             else:
                 continue
 
-        print(f"Generation {generationCounter} / {generationAmount} complete.")
+        print(f"Generation {generationCounter} / {generationAmount} complete in {int(time.time() - genTime)} seconds")
 
     return generationAmount
 
@@ -568,5 +571,6 @@ if __name__ == '__main__':
     singleBetDict = {1: betList.copy()}
     singleFitnessDict = calcFitness(singleSimDict, singleBetDict)
     print('Best individual fitness: '+str(singleFitnessDict[1]))
+
 
     plot(highest_fit, generationAmount)
