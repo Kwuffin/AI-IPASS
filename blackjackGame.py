@@ -169,20 +169,20 @@ def botPlay(botStrat, dDeck):
             print("Bot stands")
 
         elif botDecision == 1:
-            botDecision = "hit"
+            botChoice = "hit"
             print("Bot hits")
 
         elif botDecision == 2:
-            botDecision = "double down"
+            botChoice = "double down"
             print("Bot doubles down")
 
         elif botDecision == 3:
-            botDecision = "split"
+            botChoice = "split"
             print("Bot splits")
 
         if botChoice == "double down":
             drawCard(bDeck)
-            botDecision = "stand"
+            botChoice = "stand"
 
         if botChoice == "stand" or bjs.bust(bDeck):
             return bDeck
@@ -196,9 +196,9 @@ def botPlay(botStrat, dDeck):
             for deck in bDecks:
                 deckCounter += 1
 
-                botDecision = "hit"
+                botChoice = "hit"
 
-                while botDecision == "hit":
+                while botChoice == "hit":
                     drawCard(deck)
 
                     deck = bjs.checkAce(deck)
@@ -213,23 +213,23 @@ def botPlay(botStrat, dDeck):
 
                     if botDecision == 0:
                         botChoice = "stand"
-                        print("Bot stands")
+                        print("Bot stands\n")
 
                     elif botDecision == 1:
-                        botDecision = "hit"
-                        print("Bot hits")
+                        botChoice = "hit"
+                        print("Bot hits\n")
 
                     elif botDecision == 2:
-                        botDecision = "double down"
-                        print("Bot doubles down")
+                        botChoice = "double down"
+                        print("Bot doubles down\n")
 
                     elif botDecision == 3:
-                        botDecision = "split"
-                        print("Bot splits")
+                        botChoice = "split"
+                        print("Bot splits\n")
 
                     if botChoice == "double down":
                         drawCard(bDeck)
-                        botDecision = "stand"
+                        botChoice = "stand"
 
                     if botChoice == "stand" or bjs.bust(bDeck):
                         break
@@ -281,12 +281,12 @@ def evalDecks(deckDict, dDeck, betDict, bDeck):
                 dw, pw = bjs.compare(splitDeck, dDeck)  # dw = dealer win ; pw = player win
                 if dw == 1 and pw == 0:
                     print("The dealer won, better luck next time.\n"
-                          f"You lost €{betDict[player]}.")
+                          f"You lost €{betDict[player]/2}.")
                 elif dw == 0 and pw == 0:
                     print("You and the dealer had the same value\n"
-                          f"You received your bet of €{betDict[player]} back.")
+                          f"You received your bet of €{betDict[player]/2} back.")
                 elif dw == 0 and pw == 1:
-                    print(f"Congratulations! You won €{betDict[player]}")
+                    print(f"Congratulations! You won €{betDict[player]/2}")
 
     if type(bDeck[0]) == str:
         player += 1
